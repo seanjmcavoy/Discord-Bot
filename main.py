@@ -5,6 +5,7 @@ from discord import app_commands
 from apikeys import BOT_TOKEN
 from fetchers import get_cat, get_dog
 from pokemon import get_pokemon
+from downloader import downloader
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -58,6 +59,15 @@ async def poke_command(interaction: discord.Interaction):
     except Exception as e:
         print(f"Error poke_command: {e}")
         await interaction.followup.send("Error getting pokemon")
+@tree.command(name="mp4", description="video downloader")
+async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
+    await interaction.response.defer()
+    try:
+        resp = downloader(link, name)
+        await interaction.followup.send(files=resp)
+    except Exception as e:
+        print(f"Error mp4_command: {e}")
+        await interaction.followup.send("Error fetching video")
 
 if __name__ == "__main__":
     client.run(BOT_TOKEN)
