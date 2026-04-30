@@ -14,6 +14,7 @@ tree = app_commands.CommandTree(client)
 async def on_ready():
     print("Online.")
     print('-' * 20 )
+    #session to use with apis
     client.session = httpx.AsyncClient()
     try:
         synced = await tree.sync()
@@ -48,11 +49,15 @@ async def dog_command(interaction: discord.Interaction):
 @tree.command(name="pokemon", description="get pokemon")
 async def poke_command(interaction: discord.Interaction):
     await interaction.response.defer()
-    embed, image = await get_pokemon(client.session)
-    await interaction.followup.send(embed=embed, file=image)
-
-
-
+    try:
+        embed, image = await get_pokemon(client.session)
+        if embed and image:
+            await interaction.followup.send(embed=embed, file=image)
+        else:
+            await interaction.followup.send("Could not retrieve Pokemon data")
+    except Exception as e:
+        print(f"Error poke_command: {e}")
+        await interaction.followup.send("Error getting pokemon")
 
 if __name__ == "__main__":
     client.run(BOT_TOKEN)

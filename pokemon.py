@@ -1,7 +1,5 @@
-import asyncio
 import io
 import random
-
 import discord
 import httpx
 
@@ -25,7 +23,6 @@ class Pokemon:
                f"{self.sprite_shiny}\n"
                f"{self.types}\n"
                f"{self.stats}\n")
-
         return res
 
 pokemon_type_colors = {
@@ -76,34 +73,40 @@ def poke_stats(stats):
 async def get_pokemon(session: httpx.AsyncClient):
     n = random.randint(1,1025)
     url = f"https://pokeapi.co/api/v2/pokemon/{n}"
-    resp = await session.get(url)
-    resp.raise_for_status()
-    poke = Pokemon(resp.json(), n)
 
-    return await poke_embed(poke, session)
+    try:
+        resp = await session.get(url)
+        resp.raise_for_status()
+        poke = Pokemon(resp.json(), n)
+        return await poke_embed(poke, session)
+    except Exception as e:
+        print(f"Error in getting pokeapi {e}")
+        return None, None
 
 async def poke_embed(poke: Pokemon, session: httpx.AsyncClient):
     image_url = poke.sprite
     if random.randint(1,10) == 1:
         image_url = poke.sprite_shiny
-    image_resp = await session.get(image_url)
-    image_resp.raise_for_status()
+    try:
+        image_resp = await session.get(image_url)
+        image_resp.raise_for_status()
+        image_buffer = io.BytesIO(image_resp.content)
+        image_file = discord.File(image_buffer, filename="poke.png")
 
+        poke_color = pokemon_type_colors[poke.color]
+        embed = discord.Embed(title=poke.name,color=discord.Color.from_str(poke_color))
+        embed.set_footer(text=poke.id)
+        des = (f"Type: {poke.types}\n"
+                f"Ability: {poke.ability}\n\n"
+                f"{poke.stats}")
 
-    image_buffer = io.BytesIO(image_resp.content)
-    image_file = discord.File(image_buffer, filename="poke.png")
+        embed.description = des
 
-    poke_color = pokemon_type_colors[poke.color]
-    embed = discord.Embed(title=poke.name,color=discord.Color.from_str(poke_color))
-    embed.set_footer(text=poke.id)
-    des = (f"Type: {poke.types}\n"
-           f"Ability: {poke.ability}\n\n"
-           f"{poke.stats}")
+        embed.set_image(url="attachment://poke.png")
 
-    embed.description = des
-
-    embed.set_image(url="attachment://poke.png")
-
-    return embed, image_file
+        return embed, image_file
+    except Exception as e:
+        print(f"Error with image {e}")
+        return None, None
 
 
