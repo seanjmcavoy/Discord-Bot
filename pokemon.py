@@ -63,7 +63,7 @@ def poke_stats(stats):
     for s in stats:
         name = s["stat"]["name"].capitalize()
         name = name.replace("-", " ")
-        str = f"{name}   {s["base_stat"]}\n {int(s["base_stat"]) // 2 * ':'}"
+        str = f"{name}   {s['base_stat']}\n {int(s['base_stat']) // 2 * ':'}"
         arr.append(str)
     return '\n'.join(arr)
 
@@ -98,7 +98,8 @@ async def poke_embed(poke: Pokemon, session: httpx.AsyncClient):
         embed.set_footer(text=poke.id)
         des = (f"Type: {poke.types}\n"
                 f"Ability: {poke.ability}\n\n"
-                f"{poke.stats}")
+                #f"{poke.stats}"
+               )
 
         embed.description = des
 

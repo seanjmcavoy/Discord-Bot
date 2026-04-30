@@ -15,7 +15,7 @@ async def on_ready():
     print("Online.")
     print('-' * 20 )
     #session to use with apis
-    client.session = httpx.AsyncClient()
+    client.session = httpx.AsyncClient(timeout=httpx.Timeout(10.0))
     try:
         synced = await tree.sync()
         print(f"Synced {len(synced)} command(s)")
