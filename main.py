@@ -1,5 +1,5 @@
 import asyncio
-
+import logging
 import discord
 import httpx
 from discord import app_commands
@@ -7,22 +7,25 @@ from apikeys import BOT_TOKEN
 from fetchers import get_cat, get_dog
 from pokemon import get_pokemon
 from downloader import downloader
+from logger import setup_logger
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
+setup_logger()
+logger = logging.getLogger(__name__)
 @client.event
 async def on_ready():
-    print("Online.")
-    print('-' * 20 )
+
+    logger.info("Online.")
     #session to use with apis
     client.session = httpx.AsyncClient(timeout=httpx.Timeout(10.0))
     try:
         synced = await tree.sync()
-        print(f"Synced {len(synced)} command(s)")
+        logger.info(f"Synced {len(synced)} command(s)")
     except Exception as e:
-        print(f"Error syncing commands: {e}")
+        logger.error(f"Error syncing commands: {e}")
 
 
 #cat images
@@ -33,13 +36,13 @@ async def cat_command(interaction: discord.Interaction):
         resp = await get_cat(client.session)
         await interaction.followup.send(resp)
     except httpx.HTTPError as e:
-        print(f"Network error in cat_command: {e}")
+        logger.warning(f"Network error in cat_command: {e}")
         await interaction.followup.send("Can't reach api")
     except (KeyError, IndexError) as e:
-        print(f"Data error in cat_command: {e}")
+        logger.warning(f"Data error in cat_command: {e}")
         await interaction.followup.send("Error from the API.")
     except Exception as e:
-        print(f"Unexpected error in cat_command: {e}")
+        logger.error(f"Unexpected error in cat_command: {e}")
         await interaction.followup.send("An unknown error occurred.")
 
 
@@ -51,13 +54,13 @@ async def dog_command(interaction: discord.Interaction):
         resp = await get_dog(client.session)
         await interaction.followup.send(resp)
     except httpx.HTTPError as e:
-        print(f"Network error in dog_command: {e}")
+        logger.warning(f"Network error in dog_command: {e}")
         await interaction.followup.send("Can't reach api")
     except (KeyError, IndexError) as e:
-        print(f"Data error in dog_command: {e}")
+        logger.warning(f"Data error in dog_command: {e}")
         await interaction.followup.send("Error from the API.")
     except Exception as e:
-        print(f"Unexpected error in dog_command: {e}")
+        logger.error(f"Unexpected error in dog_command: {e}")
         await interaction.followup.send("An unknown error occurred.")
 
 #pokemon
@@ -71,7 +74,7 @@ async def poke_command(interaction: discord.Interaction):
         else:
             await interaction.followup.send("Could not retrieve Pokemon data")
     except Exception as e:
-        print(f"Error poke_command: {e}")
+        logger.error(f"Error poke_command: {e}")
         await interaction.followup.send("Error getting pokemon")
          
 @tree.command(name="mp4", description="video downloader")
@@ -79,10 +82,11 @@ async def mp4_command(interaction: discord.Interaction, link: str, name: str = "
     await interaction.response.defer()
     try:
         resp = await asyncio.to_thread(downloader, link, name)
+        logger.info("returning %d files for link=%s", len(resp), link)
         await interaction.followup.send(files=resp)
     except Exception as e:
-        print(f"Error mp4_command: {e}")
+        logger.error(f"Error mp4_command: {e}")
         await interaction.followup.send("Error fetching video")
 
 if __name__ == "__main__":
-    client.run(BOT_TOKEN)
+    client.run(BOT_TOKEN, log_handler=None)

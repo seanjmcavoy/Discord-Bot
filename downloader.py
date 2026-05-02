@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 import time
@@ -17,17 +18,18 @@ primary_format = (
     "bv*+ba / "
     "b"
     )
-
+logger = logging.getLogger(__name__)
 
 def downloader(link, name):
     temp_dir_path = "./temp"
     if name == "":
         name = str(int(round(time.time()* 1000)))
+    logger.info("download requested: link=%s name=%s", link, name)
 
     try:
         os.makedirs(temp_dir_path, exist_ok=True)
     except OSError as e:
-        print(f"Mkdir failure: {e}")
+        logger.error("failed to create temp dir: %s", temp_dir_path)
         return None
 
     with tempfile.TemporaryDirectory(dir=temp_dir_path) as tmpdir:
@@ -35,14 +37,14 @@ def downloader(link, name):
             'format': f"{primary_format}",
             'merge_output_format': 'mp4',
             'restrict_filenames': True,
+            'remote_components': ['ejs:github'],
             'postprocessor_args': {
                 'ffmpeg': [
                     '-threads', '1',
                     '-preset', 'ultrafast',
                 ]
             },
-            'quiet': True,
-            'no_warnings': True,
+            'logger': logger,
             "max_filesize": 8 * 1024 * 1024,
             'outtmpl': os.path.join(tmpdir, f'{name}.%(ext)s'),
         }
@@ -50,10 +52,10 @@ def downloader(link, name):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([link])
         except DownloadError as e:
-            print(f"Download Error: {e}")
+            logger.error(f"Download Error: {e}")
             return None
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(f"Error: {e}")
             return None
 
         files_to_send: list[discord.File] = []
@@ -63,6 +65,6 @@ def downloader(link, name):
                     files_to_send.append(discord.File(f, filename=f'{send_file}'))
             return files_to_send
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(f"Error: {e}")
             return None
 

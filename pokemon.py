@@ -1,4 +1,5 @@
 import io
+import logging
 import random
 import discord
 import httpx
@@ -69,7 +70,7 @@ def poke_stats(stats):
 
 
 
-
+logger = logging.getLogger(__name__)
 async def get_pokemon(session: httpx.AsyncClient):
     n = random.randint(1,1025)
     url = f"https://pokeapi.co/api/v2/pokemon/{n}"
@@ -80,7 +81,7 @@ async def get_pokemon(session: httpx.AsyncClient):
         poke = Pokemon(resp.json(), n)
         return await poke_embed(poke, session)
     except Exception as e:
-        print(f"Error in getting pokeapi {e}")
+        logger.error(f"Error in getting pokeapi {e}")
         return None, None
 
 async def poke_embed(poke: Pokemon, session: httpx.AsyncClient):
@@ -107,7 +108,7 @@ async def poke_embed(poke: Pokemon, session: httpx.AsyncClient):
 
         return embed, image_file
     except Exception as e:
-        print(f"Error with image {e}")
+        logger.error(f"Error with image {e}")
         return None, None
 
 
