@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 import tempfile
@@ -7,7 +8,8 @@ import discord
 import yt_dlp
 #keep below 8MB
 #use mp4 if possible for iphones lol
-primary_format = (
+
+primary_formats = (
     "bv*[filesize<8M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<2M][ext=m4a] / "
     "bv*[filesize<8M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<2M][ext=mp4] / "
     "bv*[filesize<7M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<3M] / "
@@ -29,12 +31,12 @@ def downloader(link, name):
     try:
         os.makedirs(temp_dir_path, exist_ok=True)
     except OSError as e:
-        logger.error("failed to create temp dir: %s", temp_dir_path)
-        return None
+        logger.error("failed to create temp dir: %s: %s", temp_dir_path, e)
+        raise
 
     with tempfile.TemporaryDirectory(dir=temp_dir_path) as tmpdir:
         ydl_opts = {
-            'format': f"{primary_format}",
+            'format': f"{primary_formats}",
             'merge_output_format': 'mp4',
             'restrict_filenames': True,
             'remote_components': ['ejs:github'],
@@ -45,26 +47,27 @@ def downloader(link, name):
                 ]
             },
             'logger': logger,
-            "max_filesize": 8 * 1024 * 1024,
+            "max_filesize": 10 * 1024 * 1024,
             'outtmpl': os.path.join(tmpdir, f'{name}.%(ext)s'),
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([link])
         except DownloadError as e:
-            logger.error(f"Download Error: {e}")
-            return None
+            logger.error(f"yt-dlp: {e}")
+            raise
         except Exception as e:
             logger.error(f"Error: {e}")
-            return None
+            raise
 
-        files_to_send: list[discord.File] = []
+        send_file = f"{name}.mp4"
         try:
-            for send_file in os.listdir(tmpdir):
-                with open(os.path.join(tmpdir, send_file), 'rb') as f:
-                    files_to_send.append(discord.File(f, filename=f'{send_file}'))
-            return files_to_send
+            with open(os.path.join(tmpdir, send_file), 'rb') as f:
+                data = f.read()
+            buffer = io.BytesIO(data)
+            buffer.seek(0)
+            return discord.File(buffer, filename=f'{send_file}')
         except Exception as e:
-            logger.error(f"Error: {e}")
-            return None
+            logger.error(f"File was not found: {e}")
+            raise
 

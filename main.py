@@ -3,9 +3,10 @@ import logging
 import discord
 import httpx
 from discord import app_commands
+from yt_dlp.utils import DownloadError
 from apikeys import BOT_TOKEN
 from fetchers import get_cat, get_dog
-from pokemon import get_pokemon
+from pokemon import pokemon_get
 from downloader import downloader
 from logger import setup_logger
 
@@ -15,9 +16,9 @@ tree = app_commands.CommandTree(client)
 
 setup_logger()
 logger = logging.getLogger(__name__)
+
 @client.event
 async def on_ready():
-
     logger.info("Online.")
     #session to use with apis
     client.session = httpx.AsyncClient(timeout=httpx.Timeout(10.0))
@@ -27,7 +28,6 @@ async def on_ready():
     except Exception as e:
         logger.error(f"Error syncing commands: {e}")
 
-
 #cat images
 @tree.command(name="cat", description="cat image")
 async def cat_command(interaction: discord.Interaction):
@@ -35,16 +35,12 @@ async def cat_command(interaction: discord.Interaction):
     try:
         resp = await get_cat(client.session)
         await interaction.followup.send(resp)
-    except httpx.HTTPError as e:
-        logger.warning(f"Network error in cat_command: {e}")
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
         await interaction.followup.send("Can't reach api")
-    except (KeyError, IndexError) as e:
-        logger.warning(f"Data error in cat_command: {e}")
-        await interaction.followup.send("Error from the API.")
     except Exception as e:
-        logger.error(f"Unexpected error in cat_command: {e}")
+        logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
-
 
 #dog images
 @tree.command(name="dog", description="dog image")
@@ -53,14 +49,11 @@ async def dog_command(interaction: discord.Interaction):
     try:
         resp = await get_dog(client.session)
         await interaction.followup.send(resp)
-    except httpx.HTTPError as e:
-        logger.warning(f"Network error in dog_command: {e}")
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
         await interaction.followup.send("Can't reach api")
-    except (KeyError, IndexError) as e:
-        logger.warning(f"Data error in dog_command: {e}")
-        await interaction.followup.send("Error from the API.")
     except Exception as e:
-        logger.error(f"Unexpected error in dog_command: {e}")
+        logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
 
 #pokemon
@@ -68,25 +61,31 @@ async def dog_command(interaction: discord.Interaction):
 async def poke_command(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
-        embed, image = await get_pokemon(client.session)
-        if embed and image:
-            await interaction.followup.send(embed=embed, file=image)
+        embed, image = await pokemon_get(client.session)
+        if embed is None or image is None:
+            await interaction.followup.send("Error in building embed")
         else:
-            await interaction.followup.send("Could not retrieve Pokemon data")
+            await interaction.followup.send(embed=embed, file=image)
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
+        await interaction.followup.send("Can't reach api")
     except Exception as e:
-        logger.error(f"Error poke_command: {e}")
-        await interaction.followup.send("Error getting pokemon")
+        logger.error(f"Unexpected error: {e}")
+        await interaction.followup.send("An unknown error occurred.")
          
 @tree.command(name="mp4", description="video downloader")
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
     await interaction.response.defer()
     try:
         resp = await asyncio.to_thread(downloader, link, name)
-        logger.info("returning %d files for link=%s", len(resp), link)
-        await interaction.followup.send(files=resp)
+        logger.info("returning file for link=%s",link)
+        await interaction.followup.send(file=resp)
+    except DownloadError as e:
+        logger.error(f"User request failed: {e}")
+        await interaction.followup.send(f"API failed")
     except Exception as e:
         logger.error(f"Error mp4_command: {e}")
-        await interaction.followup.send("Error fetching video")
+        await interaction.followup.send("Can't download. Cant get below 10MB or Error")
 
 if __name__ == "__main__":
     client.run(BOT_TOKEN, log_handler=None)
