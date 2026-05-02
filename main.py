@@ -1,3 +1,4 @@
+import asyncio
 
 import discord
 import httpx
@@ -31,9 +32,16 @@ async def cat_command(interaction: discord.Interaction):
     try:
         resp = await get_cat(client.session)
         await interaction.followup.send(resp)
+    except httpx.HTTPError as e:
+        print(f"Network error in cat_command: {e}")
+        await interaction.followup.send("Can't reach api")
+    except (KeyError, IndexError) as e:
+        print(f"Data error in cat_command: {e}")
+        await interaction.followup.send("Error from the API.")
     except Exception as e:
-        print(f"Error cat_command: {e}")
-        await interaction.followup.send("Error fetching image.")
+        print(f"Unexpected error in cat_command: {e}")
+        await interaction.followup.send("An unknown error occurred.")
+
 
 #dog images
 @tree.command(name="dog", description="dog image")
@@ -42,9 +50,15 @@ async def dog_command(interaction: discord.Interaction):
     try:
         resp = await get_dog(client.session)
         await interaction.followup.send(resp)
+    except httpx.HTTPError as e:
+        print(f"Network error in dog_command: {e}")
+        await interaction.followup.send("Can't reach api")
+    except (KeyError, IndexError) as e:
+        print(f"Data error in dog_command: {e}")
+        await interaction.followup.send("Error from the API.")
     except Exception as e:
-        print(f"Error dog_command: {e}")
-        await interaction.followup.send("Error fetching image.")
+        print(f"Unexpected error in dog_command: {e}")
+        await interaction.followup.send("An unknown error occurred.")
 
 #pokemon
 @tree.command(name="pokemon", description="get pokemon")
@@ -59,11 +73,12 @@ async def poke_command(interaction: discord.Interaction):
     except Exception as e:
         print(f"Error poke_command: {e}")
         await interaction.followup.send("Error getting pokemon")
+         
 @tree.command(name="mp4", description="video downloader")
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
     await interaction.response.defer()
     try:
-        resp = downloader(link, name)
+        resp = await asyncio.to_thread(downloader, link, name)
         await interaction.followup.send(files=resp)
     except Exception as e:
         print(f"Error mp4_command: {e}")
