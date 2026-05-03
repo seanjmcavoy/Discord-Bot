@@ -7,7 +7,7 @@ from yt_dlp.utils import DownloadError
 from apikeys import BOT_TOKEN
 from fetchers import get_cat, get_dog, get_waifu, get_art
 from pokemon import pokemon_get
-from downloader import downloader
+from downloader import mp4, gif
 from logger import setup_logger
 from caseSimulator import case_open
 
@@ -123,7 +123,7 @@ async def case_command(interaction: discord.Interaction):
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
     await interaction.response.defer()
     try:
-        resp = await asyncio.to_thread(downloader, link, name)
+        resp = await asyncio.to_thread(mp4, link, name)
         logger.info("returning file for link=%s",link)
         await interaction.followup.send(file=resp)
     except DownloadError as e:
@@ -131,6 +131,20 @@ async def mp4_command(interaction: discord.Interaction, link: str, name: str = "
         await interaction.followup.send(f"API failed")
     except Exception as e:
         logger.error(f"Error mp4_command: {e}")
+        await interaction.followup.send("Can't download. Cant get below 10MB or Error")
+
+@tree.command(name="gif", description="gif downloader")
+async def gif_command(interaction: discord.Interaction, link: str, name: str = ""):
+    await interaction.response.defer()
+    try:
+        resp = await asyncio.to_thread(gif, link, name)
+        logger.info("returning file for link=%s",link)
+        await interaction.followup.send(file=resp)
+    except DownloadError as e:
+        logger.error(f"User request failed: {e}")
+        await interaction.followup.send(f"API failed")
+    except Exception as e:
+        logger.error(f"Error gif command: {e}")
         await interaction.followup.send("Can't download. Cant get below 10MB or Error")
 
 if __name__ == "__main__":
