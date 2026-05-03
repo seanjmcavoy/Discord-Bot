@@ -5,7 +5,7 @@ import discord
 import httpx
 
 logger = logging.getLogger(__name__)
-
+#class to add more features later
 class Pokemon:
     def __init__(self, pokeapi, id):
         self.id = id
@@ -36,19 +36,20 @@ type_colors = {
     'steel': '#B7B7CE',
     'water': '#6390F0'
 }
-
+# add all abilities to single string
 def pokemon_ability(abilities):
     arr = []
     for a in abilities:
         arr.append(a["ability"]["name"].capitalize())
     return '/'.join(arr)
-
+# add all types to single string
 def pokemon_type(types):
     arr = []
     for t in types:
         arr.append(t["type"]["name"].capitalize())
     return '/'.join(arr), types[0]["type"]["name"]
-
+# entry function
+# random pokedex number and get json from pokeapi
 async def pokemon_get(session: httpx.AsyncClient):
     n = random.randint(1,1025)
     url = f"https://pokeapi.co/api/v2/pokemon/{n}"
@@ -56,7 +57,7 @@ async def pokemon_get(session: httpx.AsyncClient):
     resp.raise_for_status()
     poke = Pokemon(resp.json(), n)
     return await embed_creator(poke, session)
-
+#discord embed return
 async def embed_creator(poke: Pokemon, session: httpx.AsyncClient):
     image_url = poke.sprite
     if random.randint(1,10) == 1:

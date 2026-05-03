@@ -1,7 +1,7 @@
 import logging
 import os
 
-
+#logger setup paste from ai
 def setup_logger():
     os.makedirs("./logs", exist_ok=True)
 

@@ -4,19 +4,17 @@ import random
 import discord
 import httpx
 logger = logging.getLogger(__name__)
+
+#basic 1/10 chance for statrack
 def weapon_stattrack():
     n = random.randint(1,10)
     if n == 1:
         return True
     return False
+# basic float return
+# TODO add input range for floats generation for different skins
 
 def weapon_float():
-    tiers_floats = {
-        0.07 : "Factory New",
-        0.15 : "Minimal Wear",
-        0.38 : "Well-Worn",
-        1.0  : "Battle-Scarred"
-    }
     f = random.random()
 
     if f <= 0.07:
@@ -28,6 +26,8 @@ def weapon_float():
     else:
         return f, "Battle-Scarred"
 
+# rarity [79.92, 15.98, 3.2, 0.64, 0.26] offical odds
+# using boosted odds
 def weapon_rarity():
     RARITIES = [
         "Blue",
@@ -37,9 +37,10 @@ def weapon_rarity():
         "Gold",
     ]
     #WEIGHTS = [79.92, 15.98, 3.2, 0.64, 0.26]
-    WEIGHTS = [45,25,15,10,5]
+    WEIGHTS = [55,25,10,7.5,2.5]
     return random.choices(RARITIES, weights=WEIGHTS, k=1)[0]
 
+#weapons case random weapon from given rarity
 def weapon_case1_weapons(rarity):
     if rarity == "Red":
         return "AWP | Lightning Strike"
@@ -69,45 +70,46 @@ def weapon_case1_weapons(rarity):
         return random.choice(BLUE)
 
     GOLD = [
-        "★ Bayonet | Forest DDPAT (Factory New)", "★ Bayonet | Scorched (Factory New)",
-        "★ Bayonet | Safari Mesh (Factory New)", "★ Bayonet | Urban Masked (Factory New)",
-        "★ Bayonet | Night (Factory New)", "★ Bayonet | Blue Steel (Factory New)", "★ Bayonet | Stained (Factory New)",
-        "★ Bayonet | Case Hardened (Factory New)",
-        "★ Bayonet | Slaughter (Factory New)", "★ Bayonet | Crimson Web (Factory New)",
-        "★ Bayonet | Fade (Factory New)", "★ Bayonet | Boreal Forest (Factory New)",
+        "★ Bayonet | Forest DDPAT", "★ Bayonet | Scorched ",
+        "★ Bayonet | Safari Mesh ", "★ Bayonet | Urban Masked ",
+        "★ Bayonet | Night ", "★ Bayonet | Blue Steel ", "★ Bayonet | Stained ",
+        "★ Bayonet | Case Hardened ",
+        "★ Bayonet | Slaughter ", "★ Bayonet | Crimson Web ",
+        "★ Bayonet | Fade ", "★ Bayonet | Boreal Forest ",
         "★ Bayonet",
-        "★ Flip Knife | Forest DDPAT (Factory New)", "★ Flip Knife | Scorched (Factory New)",
-        "★ Flip Knife | Safari Mesh (Factory New)", "★ Flip Knife | Urban Masked (Factory New)",
-        "★ Flip Knife | Night (Factory New)", "★ Flip Knife | Blue Steel (Factory New)",
-        "★ Flip Knife | Stained (Factory New)", "★ Flip Knife | Case Hardened (Factory New)",
-        "★ Flip Knife | Slaughter (Factory New)", "★ Flip Knife | Crimson Web (Factory New)",
-        "★ Flip Knife | Fade (Factory New)", "★ Flip Knife | Boreal Forest (Factory New)",
+        "★ Flip Knife | Forest DDPAT ", "★ Flip Knife | Scorched ",
+        "★ Flip Knife | Safari Mesh ", "★ Flip Knife | Urban Masked ",
+        "★ Flip Knife | Night ", "★ Flip Knife | Blue Steel ",
+        "★ Flip Knife | Stained ", "★ Flip Knife | Case Hardened ",
+        "★ Flip Knife | Slaughter ", "★ Flip Knife | Crimson Web ",
+        "★ Flip Knife | Fade ", "★ Flip Knife | Boreal Forest ",
         "★ Flip Knife",
-        "★ Gut Knife | Forest DDPAT (Factory New)", "★ Gut Knife | Scorched (Factory New)",
-        "★ Gut Knife | Safari Mesh (Factory New)", "★ Gut Knife | Urban Masked (Factory New)",
-        "★ Gut Knife | Night (Factory New)", "★ Gut Knife | Blue Steel (Factory New)",
-        "★ Gut Knife | Stained (Factory New)", "★ Gut Knife | Case Hardened (Factory New)",
-        "★ Gut Knife | Slaughter (Factory New)", "★ Gut Knife | Crimson Web (Factory New)",
-        "★ Gut Knife | Fade (Factory New)", "★ Gut Knife | Boreal Forest (Factory New)",
+        "★ Gut Knife | Forest DDPAT ", "★ Gut Knife | Scorched ",
+        "★ Gut Knife | Safari Mesh ", "★ Gut Knife | Urban Masked ",
+        "★ Gut Knife | Night ", "★ Gut Knife | Blue Steel ",
+        "★ Gut Knife | Stained ", "★ Gut Knife | Case Hardened ",
+        "★ Gut Knife | Slaughter ", "★ Gut Knife | Crimson Web ",
+        "★ Gut Knife | Fade ", "★ Gut Knife | Boreal Forest ",
         "★ Gut Knife",
-        "★ Karambit | Forest DDPAT (Factory New)", "★ Karambit | Scorched (Factory New)",
-        "★ Karambit | Safari Mesh (Factory New)", "★ Karambit | Urban Masked (Factory New)",
-        "★ Karambit | Night (Factory New)", "★ Karambit | Blue Steel (Factory New)",
-        "★ Karambit | Stained (Factory New)", "★ Karambit | Case Hardened (Factory New)",
-        "★ Karambit | Slaughter (Factory New)", "★ Karambit | Crimson Web (Factory New)",
-        "★ Karambit | Fade (Factory New)", "★ Karambit | Boreal Forest (Factory New)",
+        "★ Karambit | Forest DDPAT ", "★ Karambit | Scorched",
+        "★ Karambit | Safari Mesh ", "★ Karambit | Urban Masked",
+        "★ Karambit | Night ", "★ Karambit | Blue Steel",
+        "★ Karambit | Stained ", "★ Karambit | Case Hardened",
+        "★ Karambit | Slaughter ", "★ Karambit | Crimson Web",
+        "★ Karambit | Fade ", "★ Karambit | Boreal Forest",
         "★ Karambit",
-        "★ M9 Bayonet | Forest DDPAT (Factory New)", "★ M9 Bayonet | Scorched (Factory New)",
-        "★ M9 Bayonet | Safari Mesh (Factory New)", "★ M9 Bayonet | Urban Masked (Factory New)",
-        "★ M9 Bayonet | Night (Factory New)", "★ M9 Bayonet | Blue Steel (Factory New)",
-        "★ M9 Bayonet | Stained (Factory New)", "★ M9 Bayonet | Case Hardened (Factory New)",
-        "★ M9 Bayonet | Slaughter (Factory New)", "★ M9 Bayonet | Crimson Web (Factory New)",
-        "★ M9 Bayonet | Fade (Factory New)", "★ M9 Bayonet | Boreal Forest (Factory New)",
+        "★ M9 Bayonet | Forest DDPAT ", "★ M9 Bayonet | Scorched",
+        "★ M9 Bayonet | Safari Mesh ", "★ M9 Bayonet | Urban Masked",
+        "★ M9 Bayonet | Night ", "★ M9 Bayonet | Blue Steel",
+        "★ M9 Bayonet | Stained ", "★ M9 Bayonet | Case Hardened",
+        "★ M9 Bayonet | Slaughter ", "★ M9 Bayonet | Crimson Web",
+        "★ M9 Bayonet | Fade", "★ M9 Bayonet | Boreal Forest",
         "★ M9 Bayonet"
     ]
 
     return random.choice(GOLD)
-
+# item ids with buff167 ids
+# TODO add ids for each wear
 item_ids = {
     "SG 553 | Ultraviolet": 36507,
     "AUG | Wings": 34063,
@@ -118,73 +120,74 @@ item_ids = {
     "Desert Eagle | Hypnotic": 34428,
     "AK-47 | Case Hardened": 33881,
     "AWP | Lightning Strike": 34099,
-    "★ Bayonet | Forest DDPAT (Factory New)": 45654,
-    "★ Bayonet | Scorched (Factory New)": 755936,
-    "★ Bayonet | Safari Mesh (Factory New)": 42418,
-    "★ Bayonet | Urban Masked (Factory New)": 42442,
-    "★ Bayonet | Night (Factory New)": 44000,
-    "★ Bayonet | Blue Steel (Factory New)": 42361,
-    "★ Bayonet | Stained (Factory New)": 42430,
-    "★ Bayonet | Case Hardened (Factory New)": 42376,
-    "★ Bayonet | Slaughter (Factory New)": 42426,
-    "★ Bayonet | Crimson Web (Factory New)": 45460,
-    "★ Bayonet | Fade (Factory New)": 42391,
-    "★ Bayonet | Boreal Forest (Factory New)": 42366,
+    "★ Bayonet | Forest DDPAT": 45654,
+    "★ Bayonet | Scorched": 755936,
+    "★ Bayonet | Safari Mesh": 42418,
+    "★ Bayonet | Urban Masked": 42442,
+    "★ Bayonet | Night": 44000,
+    "★ Bayonet | Blue Steel": 42361,
+    "★ Bayonet | Stained": 42430,
+    "★ Bayonet | Case Hardened": 42376,
+    "★ Bayonet | Slaughter": 42426,
+    "★ Bayonet | Crimson Web": 45460,
+    "★ Bayonet | Fade": 42391,
+    "★ Bayonet | Boreal Forest": 42366,
     "★ Bayonet": 42349,
-    "★ Flip Knife | Forest DDPAT (Factory New)": 42725,
-    "★ Flip Knife | Scorched (Factory New)": 42756,
-    "★ Flip Knife | Safari Mesh (Factory New)": 42751,
-    "★ Flip Knife | Urban Masked (Factory New)": 755739,
-    "★ Flip Knife | Night (Factory New)": 42744,
-    "★ Flip Knife | Blue Steel (Factory New)": 42694,
-    "★ Flip Knife | Stained (Factory New)": 42764,
-    "★ Flip Knife | Case Hardened (Factory New)": 42707,
-    "★ Flip Knife | Slaughter (Factory New)": 42760,
-    "★ Flip Knife | Crimson Web (Factory New)": 45455,
-    "★ Flip Knife | Fade (Factory New)": 42722,
-    "★ Flip Knife | Boreal Forest (Factory New)": 756236,
+    "★ Flip Knife | Forest DDPAT": 42725,
+    "★ Flip Knife | Scorched": 42756,
+    "★ Flip Knife | Safari Mesh": 42751,
+    "★ Flip Knife | Urban Masked": 755739,
+    "★ Flip Knife | Night": 42744,
+    "★ Flip Knife | Blue Steel": 42694,
+    "★ Flip Knife | Stained": 42764,
+    "★ Flip Knife | Case Hardened": 42707,
+    "★ Flip Knife | Slaughter": 42760,
+    "★ Flip Knife | Crimson Web": 45455,
+    "★ Flip Knife | Fade": 42722,
+    "★ Flip Knife | Boreal Forest": 756236,
     "★ Flip Knife": 42682,
-    "★ Gut Knife | Forest DDPAT (Factory New)": 42823,
-    "★ Gut Knife | Scorched (Factory New)": 44239,
-    "★ Gut Knife | Safari Mesh (Factory New)": 42848,
-    "★ Gut Knife | Urban Masked (Factory New)": 764072,
-    "★ Gut Knife | Night (Factory New)": 755720,
-    "★ Gut Knife | Blue Steel (Factory New)": 42791,
-    "★ Gut Knife | Stained (Factory New)": 42860,
-    "★ Gut Knife | Case Hardened (Factory New)": 42804,
-    "★ Gut Knife | Slaughter (Factory New)": 42856,
-    "★ Gut Knife | Crimson Web (Factory New)": 42809,
-    "★ Gut Knife | Fade (Factory New)": 42820,
-    "★ Gut Knife | Boreal Forest (Factory New)": 757222,
+    "★ Gut Knife | Forest DDPAT": 42823,
+    "★ Gut Knife | Scorched": 44239,
+    "★ Gut Knife | Safari Mesh": 42848,
+    "★ Gut Knife | Urban Masked": 764072,
+    "★ Gut Knife | Night": 755720,
+    "★ Gut Knife | Blue Steel": 42791,
+    "★ Gut Knife | Stained": 42860,
+    "★ Gut Knife | Case Hardened": 42804,
+    "★ Gut Knife | Slaughter": 42856,
+    "★ Gut Knife | Crimson Web": 42809,
+    "★ Gut Knife | Fade": 42820,
+    "★ Gut Knife | Boreal Forest": 757222,
     "★ Gut Knife": 42779,
-    "★ Karambit | Forest DDPAT (Factory New)": 44049,
-    "★ Karambit | Scorched (Factory New)": 755926,
-    "★ Karambit | Safari Mesh (Factory New)": 756412,
-    "★ Karambit | Urban Masked (Factory New)": 756409,
-    "★ Karambit | Night (Factory New)": 45649,
-    "★ Karambit | Blue Steel (Factory New)": 44245,
-    "★ Karambit | Stained (Factory New)": 43037,
-    "★ Karambit | Case Hardened (Factory New)": 42985,
-    "★ Karambit | Slaughter (Factory New)": 43033,
-    "★ Karambit | Crimson Web (Factory New)": 45417,
-    "★ Karambit | Fade (Factory New)": 43000,
-    "★ Karambit | Boreal Forest (Factory New)": 42976,
+    "★ Karambit | Forest DDPAT": 44049,
+    "★ Karambit | Scorched": 755926,
+    "★ Karambit | Safari Mesh": 756412,
+    "★ Karambit | Urban Masked": 756409,
+    "★ Karambit | Night": 45649,
+    "★ Karambit | Blue Steel": 44245,
+    "★ Karambit | Stained": 43037,
+    "★ Karambit | Case Hardened": 42985,
+    "★ Karambit | Slaughter": 43033,
+    "★ Karambit | Crimson Web": 45417,
+    "★ Karambit | Fade": 43000,
+    "★ Karambit | Boreal Forest": 42976,
     "★ Karambit": 42961,
-    "★ M9 Bayonet | Forest DDPAT (Factory New)": 43095,
-    "★ M9 Bayonet | Scorched (Factory New)": 43124,
-    "★ M9 Bayonet | Safari Mesh (Factory New)": 45183,
-    "★ M9 Bayonet | Urban Masked (Factory New)": 43962,
-    "★ M9 Bayonet | Night (Factory New)": 43113,
-    "★ M9 Bayonet | Blue Steel (Factory New)": 43064,
-    "★ M9 Bayonet | Stained (Factory New)": 43132,
-    "★ M9 Bayonet | Case Hardened (Factory New)": 43078,
-    "★ M9 Bayonet | Slaughter (Factory New)": 43128,
-    "★ M9 Bayonet | Crimson Web (Factory New)": 45454,
-    "★ M9 Bayonet | Fade (Factory New)": 33812,
-    "★ M9 Bayonet | Boreal Forest (Factory New)": 45224,
+    "★ M9 Bayonet | Forest DDPAT": 43095,
+    "★ M9 Bayonet | Scorched": 43124,
+    "★ M9 Bayonet | Safari Mesh": 45183,
+    "★ M9 Bayonet | Urban Masked": 43962,
+    "★ M9 Bayonet | Night": 43113,
+    "★ M9 Bayonet | Blue Steel": 43064,
+    "★ M9 Bayonet | Stained": 43132,
+    "★ M9 Bayonet | Case Hardened": 43078,
+    "★ M9 Bayonet | Slaughter": 43128,
+    "★ M9 Bayonet | Crimson Web": 45454,
+    "★ M9 Bayonet | Fade": 33812,
+    "★ M9 Bayonet | Boreal Forest": 45224,
     "★ M9 Bayonet": 43052,
 }
-
+# buff api usage basic price and image
+# TODO use more data later
 async def buff_api(id, session: httpx.AsyncClient):
     url = f"https://buff.163.com/api/market/goods/info?game=csgo&goods_id={id}"
     resp = await session.get(url)
@@ -193,16 +196,17 @@ async def buff_api(id, session: httpx.AsyncClient):
     url = resp["data"]["goods_info"]["icon_url"]
     price = float(resp["data"]["goods_info"]["steam_price_cny"])
     return url, f"${price*0.15:.2f} USD"
-
+#items colors
+# TODO get exact colors valve use
 color_rare = {
-        "Blue": discord.Color.blue(),
+        "Blue": discord.Color.from_str("#002bff"),
         "Purple": discord.Color.purple(),
         "Pink": discord.Color.pink(),
         "Red": discord.Color.red(),
         "Gold": discord.Color.gold(),
 }
 
-
+#entry function
 async def case_open(session: httpx.AsyncClient):
     wfloat = weapon_float()
     wstat = weapon_stattrack()

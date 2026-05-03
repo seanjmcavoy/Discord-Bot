@@ -1,33 +1,33 @@
 import asyncio
 import json
 import random
-
-import aiohttp
 import httpx
 
-
+# cat get thecatapi
 async def get_cat(session: httpx.AsyncClient)-> str:
     url = "https://api.thecatapi.com/v1/images/search"
     resp = await session.get(url)
     resp.raise_for_status()
     return resp.json()[0]['url']
-
+# dog get random.dog
 async def get_dog(session: httpx.AsyncClient) -> str:
     url = "https://random.dog/woof.json"
     resp = await session.get(url)
     resp.raise_for_status()
     return resp.json()['url']
 
+# waifu get nekos.best
 async def get_waifu(session: httpx.AsyncClient) -> str:
     url = "https://nekos.best/api/v2/neko"
     resp = await session.get(url)
     resp.raise_for_status()
     return resp.json()['results'][0]['url']
-
+# art get metmuseum
 async def get_art(session: httpx.AsyncClient):
     with open("jsons/art.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     n = random.choice(data["objectIDs"])
+    #fix 403 ? idk
     session.headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }

@@ -8,7 +8,7 @@ import discord
 import yt_dlp
 from gallery_dl import job, exception, config
 #keep below 8MB
-#use mp4 if possible for iphones lol
+#use mp4 if possible for iPhones lol
 
 primary_formats = (
     "bv*[filesize<8M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<2M][ext=m4a] / "
@@ -102,21 +102,18 @@ def gif(link, name):
             )
             ydl_opts = {
                 'format': gif_formats,
-                # This tells yt-dlp to treat the final output as a gif
                 'final_ext': 'gif',
                 'restrict_filenames': True,
                 'postprocessors': [
                     {
-                        # Note: The key must be exactly 'VideoConvertor'
                         'key': 'FFmpegVideoConvertor',
                         'preferedformat': 'gif',
                     }
                 ],
                 'postprocessor_args': {
-                    # These flags are passed directly to FFmpeg during the conversion
                     'ffmpeg': [
                         '-threads', '1',
-                        '-vf', 'fps=12,scale=320:-1:flags=lanczos',
+                        '-vf', 'fps=15',
                         '-gifflags', '+transdiff',  # Optimization: only stores changed pixels
                     ]
                 },

@@ -72,7 +72,7 @@ async def waifu_command(interaction: discord.Interaction):
 
 #art images
 @tree.command(name="art", description="European art ")
-async def anime_command(interaction: discord.Interaction):
+async def art_command(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         resp = await get_art(client.session)
@@ -118,7 +118,7 @@ async def case_command(interaction: discord.Interaction):
         logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
 
-         
+#mp4
 @tree.command(name="mp4", description="video downloader")
 @app_commands.describe(link= "Tested X, Youtube, Reddit- 3 may 26" ,name = "Optional name for file")
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
@@ -134,6 +134,7 @@ async def mp4_command(interaction: discord.Interaction, link: str, name: str = "
         logger.error(f"Error mp4_command: {e}")
         await interaction.followup.send("Can't download. Cant get below 10MB or Error")
 
+#gif
 @tree.command(name="gif", description="gif downloader")
 @app_commands.describe(link= "Tested X, pixiv - 3 may" ,name = "Optional name for file")
 async def gif_command(interaction: discord.Interaction, link: str, name: str = ""):
