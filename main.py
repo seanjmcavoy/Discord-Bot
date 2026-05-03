@@ -5,7 +5,7 @@ import httpx
 from discord import app_commands
 from yt_dlp.utils import DownloadError
 from apikeys import BOT_TOKEN
-from fetchers import get_cat, get_dog, get_anime
+from fetchers import get_cat, get_dog, get_waifu, get_art
 from pokemon import pokemon_get
 from downloader import downloader
 from logger import setup_logger
@@ -57,11 +57,25 @@ async def dog_command(interaction: discord.Interaction):
         logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
 #anime images
-@tree.command(name="anime", description="waifu image (NO AI)")
+@tree.command(name="waifu", description="waifu image (NO AI)")
+async def waifu_command(interaction: discord.Interaction):
+    await interaction.response.defer()
+    try:
+        resp = await get_waifu(client.session)
+        await interaction.followup.send(resp)
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
+        await interaction.followup.send("Can't reach api")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        await interaction.followup.send("An unknown error occurred.")
+
+#art images
+@tree.command(name="art", description="european art ")
 async def anime_command(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
-        resp = await get_anime(client.session)
+        resp = await get_art(client.session)
         await interaction.followup.send(resp)
     except (httpx.HTTPError, httpx.HTTPStatusError) as e:
         logger.warning(f"Network error: {e}")

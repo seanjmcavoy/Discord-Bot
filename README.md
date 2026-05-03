@@ -5,4 +5,6 @@ features:
   - random dog image
   - random pokemon
   - mp4 downloader (tested with youtube.com, x.com, reddit.com)
-
+  - random anime image
+  - random art image
+  - cs2 case simulator
