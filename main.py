@@ -5,10 +5,11 @@ import httpx
 from discord import app_commands
 from yt_dlp.utils import DownloadError
 from apikeys import BOT_TOKEN
-from fetchers import get_cat, get_dog
+from fetchers import get_cat, get_dog, get_anime
 from pokemon import pokemon_get
 from downloader import downloader
 from logger import setup_logger
+from caseSimulator import case_open
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -55,6 +56,19 @@ async def dog_command(interaction: discord.Interaction):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
+#anime images
+@tree.command(name="anime", description="waifu image (NO AI)")
+async def anime_command(interaction: discord.Interaction):
+    await interaction.response.defer()
+    try:
+        resp = await get_anime(client.session)
+        await interaction.followup.send(resp)
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
+        await interaction.followup.send("Can't reach api")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        await interaction.followup.send("An unknown error occurred.")
 
 #pokemon
 @tree.command(name="pokemon", description="get pokemon")
@@ -72,6 +86,24 @@ async def poke_command(interaction: discord.Interaction):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         await interaction.followup.send("An unknown error occurred.")
+
+#case
+@tree.command(name="case", description="weapons case 1")
+async def case_command(interaction: discord.Interaction):
+    await interaction.response.defer()
+    try:
+        embed, image = await case_open(client.session)
+        if embed is None or image is None:
+            await interaction.followup.send("Error in building embed")
+        else:
+            await interaction.followup.send(embed=embed, file=image)
+    except (httpx.HTTPError, httpx.HTTPStatusError) as e:
+        logger.warning(f"Network error: {e}")
+        await interaction.followup.send("Can't reach api")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        await interaction.followup.send("An unknown error occurred.")
+
          
 @tree.command(name="mp4", description="video downloader")
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
