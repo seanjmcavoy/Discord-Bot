@@ -90,6 +90,7 @@ def gif(link, name):
             config.set((), "filename", f"{name}.{{extension}}")
             config.set((), "directory", "")
             config.set((), "base-directory", tmpdir)
+            config.set((), "output.logger", logger)
             dl_job = job.DownloadJob(link)
             dl_job.run()
         else:

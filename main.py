@@ -71,7 +71,7 @@ async def waifu_command(interaction: discord.Interaction):
         await interaction.followup.send("An unknown error occurred.")
 
 #art images
-@tree.command(name="art", description="european art ")
+@tree.command(name="art", description="European art ")
 async def anime_command(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
@@ -102,7 +102,7 @@ async def poke_command(interaction: discord.Interaction):
         await interaction.followup.send("An unknown error occurred.")
 
 #case
-@tree.command(name="case", description="weapons case 1")
+@tree.command(name="case", description="weapons case boosted odds")
 async def case_command(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
@@ -120,6 +120,7 @@ async def case_command(interaction: discord.Interaction):
 
          
 @tree.command(name="mp4", description="video downloader")
+@app_commands.describe(link= "Tested X, Youtube, Reddit- 3 may 26" ,name = "Optional name for file")
 async def mp4_command(interaction: discord.Interaction, link: str, name: str = ""):
     await interaction.response.defer()
     try:
@@ -134,6 +135,7 @@ async def mp4_command(interaction: discord.Interaction, link: str, name: str = "
         await interaction.followup.send("Can't download. Cant get below 10MB or Error")
 
 @tree.command(name="gif", description="gif downloader")
+@app_commands.describe(link= "Tested X, pixiv - 3 may" ,name = "Optional name for file")
 async def gif_command(interaction: discord.Interaction, link: str, name: str = ""):
     await interaction.response.defer()
     try:
