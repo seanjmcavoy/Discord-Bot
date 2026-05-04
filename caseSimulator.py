@@ -37,7 +37,7 @@ def weapon_rarity():
         "Gold",
     ]
     #WEIGHTS = [79.92, 15.98, 3.2, 0.64, 0.26]
-    WEIGHTS = [55,25,10,7.5,2.5]
+    WEIGHTS = [69,20,7.5,2.5,1]
     return random.choices(RARITIES, weights=WEIGHTS, k=1)[0]
 
 #weapons case random weapon from given rarity
