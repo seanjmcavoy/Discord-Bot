@@ -255,9 +255,9 @@ async def case_open(session: httpx.AsyncClient):
         title = weapon
 
     embed = discord.Embed(title=title, colour=color_rare[rarity])
-    des = ( f"Wear: {wfloat[1]}\n"
-            f"Float: {wfloat[0]:.8f}\n"
-            f"Pattern: {weapon_pattern()}"
+    des = ( f"{wfloat[1]}\n"
+            f"{wfloat[0]:.7f}\n"
+            f"{weapon_pattern()}"
            )
     embed.description = des
     embed.set_image(url="attachment://wep.png")
