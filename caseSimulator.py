@@ -11,12 +11,37 @@ def weapon_stattrack():
     if n == 1:
         return True
     return False
-# basic float return
-# TODO add input range for floats generation for different skins
+#weapon pattern
+def weapon_pattern():
+    return random.randint(0,999)
 
-def weapon_float():
-    f = random.random()
+def get_float_range(skin_name):
+    CAPPED_WEAPONS = {
+        "AWP | Lightning Strike": (0.00, 0.08),
+        "Desert Eagle | Hypnotic": (0.00, 0.08),
+        "Glock-18 | Dragon Tattoo": (0.00, 0.08),
+        "M4A1-S | Dark Water": (0.10, 0.26),
+        "USP-S | Dark Water": (0.10, 0.26),
+        "AUG | Wings": (0.00, 0.14),
+        "MP7 | Skulls": (0.10, 0.26),
+        "SG 553 | Ultraviolet": (0.06, 0.80),
+    }
+    KNIFE_CAPS_08 = ["Fade", "Slaughter"]
+    KNIFE_CAPS_80 = ["Crimson Web", "Night", "Boreal Forest", "Forest DDPAT", "Safari Mesh", "Urban Masked", "Scorched"]
 
+    if skin_name in CAPPED_WEAPONS:
+        return CAPPED_WEAPONS[skin_name]
+
+    if skin_name.startswith("★"):
+        if any(finish in skin_name for finish in KNIFE_CAPS_08):
+            return (0.00, 0.08)
+        if any(finish in skin_name for finish in KNIFE_CAPS_80):
+            return (0.06, 0.80)
+
+    return (0.00, 1.00)
+
+def weapon_float(s, e):
+    f = random.uniform(s, e)
     if f <= 0.07:
         return f, "Factory New"
     elif f <= 0.15:
@@ -208,12 +233,11 @@ color_rare = {
 
 #entry function
 async def case_open(session: httpx.AsyncClient):
-    wfloat = weapon_float()
-    wstat = weapon_stattrack()
-    wrare = weapon_rarity()
-    wwep = weapon_case1_weapons(wrare)
-    url, price = await buff_api(item_ids[wwep], session)
-
+    rarity = weapon_rarity()
+    weapon = weapon_case1_weapons(rarity)
+    s,e = get_float_range(weapon)
+    wfloat = weapon_float(s,e)
+    url, price = await buff_api(item_ids[weapon], session)
     try:
         image_resp = await session.get(url)
         image_resp.raise_for_status()
@@ -223,15 +247,17 @@ async def case_open(session: httpx.AsyncClient):
         logger.error(f"Error with image {e}")
         raise
 
-    if wstat:
-        title = "StatTrak™ " + wwep
+    if weapon_stattrack():
+        title = "StatTrak™ " + weapon
     else:
-        title = wwep
-    embed = discord.Embed(title=title, colour=color_rare[wrare])
-    des = (f"Float: {wfloat}\n"
-           f"Rarity: {wrare}")
-    #embed.description = des
-    #embed.set_footer(text=f"{price}")
+        title = weapon
+
+    embed = discord.Embed(title=title, colour=color_rare[rarity])
+    des = ( f"Wear: {wfloat[1]}\n"
+            f"Float: {wfloat[0]:.8f}\n"
+            f"Pattern: {weapon_pattern()}"
+           )
+    embed.description = des
     embed.set_image(url="attachment://wep.png")
 
     return embed, image_file
