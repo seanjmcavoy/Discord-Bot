@@ -45,9 +45,11 @@ def weapon_float(s, e):
     if f <= 0.07:
         return f, "Factory New"
     elif f <= 0.15:
-        return f, "Minimal Wear",
+        return f, "Minimal Wear"
     elif f <= 0.38:
-        return f, "Well-Worn",
+        return f, "Field-Tested"
+    elif f <= 0.45:
+        return f, "Well-Worn"
     else:
         return f, "Battle-Scarred"
 

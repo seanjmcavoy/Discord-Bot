@@ -8,6 +8,7 @@ def setup_logger():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("discord").setLevel(logging.WARNING)
 
     log_format = logging.Formatter(
             fmt='[%(asctime)s] %(levelname)s(%(funcName)s): %(message)s',
