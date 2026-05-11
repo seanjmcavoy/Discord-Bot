@@ -55,7 +55,6 @@ PINK = [
 
 RED = [
     "AWP | Lightning Strike",
-    "AWP | Lightning Strike"
 ]
 
 # item ids with buff167 ids

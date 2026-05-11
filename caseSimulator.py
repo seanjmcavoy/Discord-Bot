@@ -72,7 +72,7 @@ def weapon_rarity():
 #weapons case random weapon from given rarity
 def weapons_base_name(rarity):
     if rarity == "Red":
-        return random,choice(CASE.RED)
+        return random.choice(CASE.RED)
 
     if rarity == "Pink":
         return random.choice(CASE.PINK)
