@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 def weapon_stattrack():
     n = random.randint(1,10)
     if n == 1:
-        return True
-    return False
+        return "StatTrak™ "
+    return ""
 #weapon pattern
 def weapon_pattern():
     return random.randint(0,999)
@@ -70,7 +70,7 @@ def weapon_rarity():
     return random.choices(RARITIES, weights=WEIGHTS, k=1)[0]
 
 #weapons case random weapon from given rarity
-def weapon_case1_weapons(rarity):
+def weapons_base_name(rarity):
     if rarity == "Red":
         return random,choice(CASE.RED)
 
@@ -93,8 +93,9 @@ async def buff_api(id, session: httpx.AsyncClient):
     resp.raise_for_status()
     resp = resp.json()
     url = resp["data"]["goods_info"]["icon_url"]
-    price = float(resp["data"]["goods_info"]["steam_price_cny"])
-    return url, f"${price*0.15:.2f} USD"
+    price = resp['data']['steam_market_url']
+    return url, price
+
 #items colors
 # TODO get exact colors valve use
 color_rare = {
@@ -108,9 +109,13 @@ color_rare = {
 #entry function
 async def case_open(session: httpx.AsyncClient):
     rarity = weapon_rarity()
-    weapon = weapon_case1_weapons(rarity)
-    s,e = get_float_range(str(weapon))
+    base = weapons_base_name(rarity)
+    s,e = get_float_range(str(base))
     wfloat = weapon_float(s,e)
+    statrack = weapon_stattrack()
+    weapon = f"{statrack}{base} ({wfloat[1]})"
+
+
     url, price = await buff_api(CASE.item_ids[weapon], session)
     try:
         image_resp = await session.get(url)
@@ -121,17 +126,15 @@ async def case_open(session: httpx.AsyncClient):
         logger.error(f"Error with image {e}")
         raise
 
-    if weapon_stattrack():
-        title = "StatTrak™ " + str(weapon)
-    else:
-        title = weapon
-
+    title = weapon
     embed = discord.Embed(title=title, colour=color_rare[rarity])
-    des = ( f"{wfloat[1]}\n"
+    des = (
             f"{wfloat[0]:.7f}\n"
-            f"{weapon_pattern()}"
+            f"{weapon_pattern()}\n"
+            f"[Market]({price})"
            )
     embed.description = des
     embed.set_image(url="attachment://wep.png")
+
 
     return embed, image_file
