@@ -1,6 +1,8 @@
 # created by virtualenv automatically
 .venv
 apikeys.py
-.idea
 temp
 logs
+.DS_Store
+__pycache__
+.vscode

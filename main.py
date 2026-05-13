@@ -11,8 +11,11 @@ from downloader import mp4, gif
 from logger import setup_logger
 from caseSimulator import case_open
 
+class BotClient(discord.Client):
+    session: httpx.AsyncClient
+
 intents = discord.Intents.default()
-client = discord.Client(intents=intents)
+client = BotClient(intents=intents)
 tree = app_commands.CommandTree(client)
 
 setup_logger()

@@ -1,3 +1,16 @@
+CAPPED_WEAPONS = {
+        "AWP | Lightning Strike": (0.00, 0.08),
+        "Desert Eagle | Hypnotic": (0.00, 0.08),
+        "Glock-18 | Dragon Tattoo": (0.00, 0.08),
+        "M4A1-S | Dark Water": (0.10, 0.26),
+        "USP-S | Dark Water": (0.10, 0.26),
+        "AUG | Wings": (0.00, 0.14),
+        "MP7 | Skulls": (0.10, 0.26),
+        "SG 553 | Ultraviolet": (0.06, 0.80),
+    }
+KNIFE_CAPS_08 = ["Fade", "Slaughter"]
+KNIFE_CAPS_80 = ["Crimson Web", "Night", "Boreal Forest", "Forest DDPAT", "Safari Mesh", "Urban Masked", "Scorched"]
+
 GOLD = [
     "★ Bayonet | Forest DDPAT", "★ Bayonet | Scorched",
     "★ Bayonet | Safari Mesh", "★ Bayonet | Urban Masked",
