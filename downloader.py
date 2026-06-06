@@ -113,8 +113,8 @@ def gif(link, name):
                 'postprocessor_args': {
                     'ffmpeg': [
                         '-threads', '1',
-                        '-vf', 'fps=15',
-                        '-gifflags', '+transdiff',  # Optimization: only stores changed pixels
+                        # The magic happens in the complex video filter below
+                        '-vf', 'fps=15,split[s0][s1];[s0]palettegen=stats_mode=full[p];[s1][p]paletteuse=dither=sierra2_4a'
                     ]
                 },
                 'logger': logger,
