@@ -7,17 +7,15 @@ from yt_dlp.utils import DownloadError
 import discord
 import yt_dlp
 from gallery_dl import job, exception, config
-#keep below 8MB
-#use mp4 if possible for iPhones lol
 
 primary_formats = (
-    "bv*[filesize<8M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<2M][ext=m4a] / "
-    "bv*[filesize<8M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<2M][ext=mp4] / "
-    "bv*[filesize<7M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<3M] / "
-    "bv*[filesize<6M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<4M] /"
-    "v*[filesize<7M][vcodec~='^((he|a)vc|h26[45])'] + a*[filesize<3M] / "
-    "b[filesize<10M] / "
-    "bv*[filesize<7M]+ba*[filesize<3M] / "
+    "bv*[filesize<15M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<5M][ext=m4a] / "
+    "bv*[filesize<15M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<5M][ext=mp4] / "
+    "bv*[filesize<12M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<8M] / "
+    "bv*[filesize<10M][ext=mp4][vcodec~='^((he|a)vc|h26[45])'] +ba*[filesize<10M] /"
+    "v*[filesize<10M][vcodec~='^((he|a)vc|h26[45])'] + a*[filesize<10M] / "
+    "b[filesize<20M] / "
+    "bv*[filesize<15M]+ba*[filesize<5M] / "
     "bv*+ba / "
     "b"
     )
@@ -48,7 +46,6 @@ def mp4(link, name):
                 ]
             },
             'logger': logger,
-            "max_filesize": 10 * 1024 * 1024,
             'outtmpl': os.path.join(tmpdir, f'{name}.%(ext)s'),
         }
         try:
@@ -94,12 +91,6 @@ def gif(link, name):
             dl_job = job.DownloadJob(link)
             dl_job.run()
         else:
-            gif_formats = (
-                "bv*[filesize<8M][height<=480][ext=mp4] / "
-                "bv*[height<=480] / "  
-                "b[height<=480] / "  
-                "b"
-            )
             ydl_opts = {
                 'format': gif_formats,
                 'final_ext': 'gif',
@@ -118,7 +109,6 @@ def gif(link, name):
                     ]
                 },
                 'logger': logger,
-                'max_filesize': 10 * 1024 * 1024,
                 'outtmpl': os.path.join(tmpdir, f'{name}.%(ext)s'),
             }
             try:
